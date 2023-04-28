@@ -1,0 +1,48 @@
+server:
+  port: 80
+spring:
+  application:
+    #应用的名称 可选
+    name: reggie_take_out
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql:///reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: root
+      password: 320897
+  servlet:
+    multipart:
+      max-file-size: 10240000
+
+mybatis-plus:
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+
+logging:
+  level:
+    root: info
+
+
+reggie:
+  path: E:\\IdeaProjects\\reggie_take_out\\src\\main\\resources\\backend\\myImgs\\
+
+email:
+  sender: 3208978948@qq.com
+  sign: Lin
+  auth_code: aewsfzkjbdesdfhh
+
+table:
+  user_email: user_email
+
+global_name:
+  employee_id: employeeId
+  user_id: userId
+  device:
+    name: device
+    pc: pc
+    mobile: mobile
