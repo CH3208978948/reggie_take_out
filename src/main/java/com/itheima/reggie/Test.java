@@ -8,6 +8,7 @@ import org.springframework.util.DigestUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
@@ -33,5 +34,7 @@ public class Test {
             e.printStackTrace();
         }
         System.out.println(date);
+
+        List.class.cast(null);
     }
 }

@@ -81,18 +81,23 @@ public class LoginCheckFilter implements Filter {
         Long userId = (Long) request.getSession().getAttribute(gUId);
 
         // 未登录拦截
-        if (empId == null && userId == null) {
+        /*if (empId == null && userId == null) {
             // 将未登录用户 转入相对应的登录页面
             checkPathAndUser(empId, userId, uri, response);
 
             response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
             return;
-        }
+        }*/
 
         // 防止前后端登录后 进入对方的界面
         checkPathAndUser(empId, userId, uri, response);
 
-        BaseContext.setCurrentId(empId != null ? empId : userId);
+        // 拿到请求的 页面地址  http://localhost/backend/page/food/list.html
+        String referer = request.getHeader("Referer");
+
+        // 注入线程id
+        if (referer.contains("/front/")) BaseContext.setCurrentId(userId);
+        if (referer.contains("/backend/")) BaseContext.setCurrentId(empId);
 
         filterChain.doFilter(servletRequest, servletResponse);
     }

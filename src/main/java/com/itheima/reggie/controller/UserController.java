@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/user")
@@ -25,6 +27,10 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    // Redis
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("${email.sender}")
     private String sender;
@@ -71,7 +77,11 @@ public class UserController {
 
 
             // 需要将生成的验证码保存到Session
-            session.setAttribute(email, authCode);
+            // session.setAttribute(email, authCode);
+
+            // 将生成的验证码缓存到Redis中，并且设置有效期为5分钟（测试时间30秒）
+            // redisTemplate.opsForValue().set(email, authCode, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(email, authCode, 30, TimeUnit.SECONDS);
 
             return R.success("验证码获取成功");
         }
@@ -88,8 +98,10 @@ public class UserController {
         String email = map.get("email").toString();
 
         // session中的验证码
-        String authCode = (String) (session.getAttribute(email) == null ? "null" : session.getAttribute(email));
+        // String authCode = (String) (session.getAttribute(email) == null ? "null" : session.getAttribute(email));
 
+        // 从Redis 中获取缓存的验证码
+        String authCode = redisTemplate.opsForValue().get(email) == null ? "null" : (String) redisTemplate.opsForValue().get(email);
         String sendAuthCode = map.get("code").toString();
         if ("null".equals(sendAuthCode)) return R.error("验证码非法");
 
@@ -122,10 +134,14 @@ public class UserController {
             // session.setAttribute(GlobalName.globalName.USER_ID, user.getId());
 
             // 用户登录则清除PC 防止进入后台
-            session.removeAttribute(gEmpId);
+            // session.removeAttribute(gEmpId);
 
             session.setAttribute(gUId, user.getId());
             System.out.println("userID" + user.getId());
+
+            // 如果用户登录成功，删除Redis中缓存的验证码
+            redisTemplate.delete(email);
+
             return R.success(user);
         }
 

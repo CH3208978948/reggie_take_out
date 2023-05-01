@@ -119,7 +119,7 @@ public class EmployeeController {
         if (emp.getStatus() == 0) return R.error("账号已禁用");
 
         // 用户id删除 防止进入用户页面
-        request.getSession().removeAttribute(gUId);
+        // request.getSession().removeAttribute(gUId);
 
         request.getSession().setAttribute(gEmpId, emp.getId());
         return R.success(emp);
