@@ -1,9 +1,7 @@
 package com.itheima.reggie.filter;
 
 
-import com.alibaba.fastjson.JSON;
 import com.itheima.reggie.common.BaseContext;
-import com.itheima.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.AntPathMatcher;
@@ -82,20 +80,22 @@ public class LoginCheckFilter implements Filter {
 
         // 未登录拦截
         /*if (empId == null && userId == null) {
-            // 将未登录用户 转入相对应的登录页面
-            checkPathAndUser(empId, userId, uri, response);
-
             response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
             return;
         }*/
 
-        // 防止前后端登录后 进入对方的界面
-        checkPathAndUser(empId, userId, uri, response);
-
-        // 拿到请求的 页面地址  http://localhost/backend/page/food/list.html
+        // 拿到发起请求的 页面地址  http://localhost/backend/page/food/list.html
         String referer = request.getHeader("Referer");
+        log.info("uri={}", uri);
+        log.info("refer={}", referer);
 
-        // 注入线程id
+        // 防止前后端登录后 进入对方的界面
+        if (prevent(empId, userId, uri, response)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        // 登录成功 注入线程id
         if (referer.contains("/front/")) BaseContext.setCurrentId(userId);
         if (referer.contains("/backend/")) BaseContext.setCurrentId(empId);
 
@@ -114,16 +114,19 @@ public class LoginCheckFilter implements Filter {
     }
 
     // 防止前后端登录后 进入对方的界面
-    public void checkPathAndUser(Long empId, Long userId, String uri, HttpServletResponse response) throws IOException {
+    public boolean prevent(Long empId, Long userId, String uri, HttpServletResponse response) throws IOException {
         if (userId == null && uri.contains("/front/")) {
             response.sendRedirect("/front/page/login.html");
-            return;
+            log.info("阻止成功");
+            return true;
         }
 
         if (empId == null && uri.contains("/backend/")) {
             response.sendRedirect("/backend/page/login/login.html");
-            return;
+            log.info("阻止成功");
+            return true;
         }
+        return false;
     }
 
 

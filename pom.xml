@@ -23,8 +23,12 @@
         <!--Redis-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-            <version>2.4.5</version>
         </dependency>
 
         <!--实现QQ邮箱授权码功能-->

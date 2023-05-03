@@ -39,15 +39,16 @@ public class DishController {
     @PostMapping
     public R<String> save(@RequestBody DishDto dishDto) {
         dishService.saveWithFlavor(dishDto);
+        // 清理所有菜品的缓存数据
+        Set keys = redisTemplate.keys("dish_" + dishDto.getCategoryId() + "_1");
+        redisTemplate.delete(keys);
+
         return R.success("新增菜品成功");
     }
 
     // 根据id查找菜品
     @GetMapping("/{id}")
     public R<DishDto> getById(@PathVariable Long id) {
-        // 现在redis缓存中查找
-        // redisCacheDish(id);
-
         DishDto dishDto = dishService.getDishWithFlavors(id);
         // 查找categoryName 并封装进 dishDto中
         // dishDto.setCategoryName(categoryService.getById(dishDto.getCategoryId()).getName());
@@ -152,32 +153,11 @@ public class DishController {
             lqw.clear();
             lqw.eq(DishFlavor::getDishId, dishId);
             dishFlavorService.remove(lqw);
+
+            // 清理所有菜品的缓存数据
+            Set keys = redisTemplate.keys("dish_" + dishService.getById(dishId).getCategoryId() + "_1");
+            redisTemplate.delete(keys);
         }
         return R.success("菜品删除成功");
-    }
-
-
-
-    // redis 缓存方法封装  从redis中获取指定缓存数据
-    public List<DishDto> redisCacheDishList(Dish dish) {
-        // 动态构造key
-        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();
-
-        // 先从redis中获取缓存数据
-        return (List<DishDto>) redisTemplate.opsForValue().get(key);
-    }
-
-    // redis 缓存方法封装  从redis中获取指定缓存数据
-    public DishDto redisCacheDish(Dish dish) {
-        // 动态构造key
-        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();
-
-        // 先从redis中获取缓存数据
-        List<DishDto> dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
-        for (DishDto dishDto : dishDtoList) {
-            // 判断缓存中是否有当前菜品
-            if (dishDto.getId() == dish.getId()) return dishDto;
-        }
-        return null;
     }
 }

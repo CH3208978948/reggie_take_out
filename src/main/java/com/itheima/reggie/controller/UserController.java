@@ -80,8 +80,8 @@ public class UserController {
             // session.setAttribute(email, authCode);
 
             // 将生成的验证码缓存到Redis中，并且设置有效期为5分钟（测试时间30秒）
-            // redisTemplate.opsForValue().set(email, authCode, 5, TimeUnit.MINUTES);
-            redisTemplate.opsForValue().set(email, authCode, 30, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(email, authCode, 5, TimeUnit.MINUTES);
+            // redisTemplate.opsForValue().set(email, authCode, 30, TimeUnit.SECONDS);
 
             return R.success("验证码获取成功");
         }
