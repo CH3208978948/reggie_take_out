@@ -21,11 +21,11 @@ public class Test {
         authCode = (long) (Math.random() * Math.pow(10, 5) + 9 * Math.pow(10, 5)) + "";
         System.out.println(authCode);
 
-        /*try {
-            SendEmailCode.sendQQEmail("3208978948@qq.com", "Lin", "2309802798@qq.com", "123456", "lijgzxpydkadddaj");
+        try {
+            SendEmailCode.sendQQEmail("3208978948@qq.com", "Lin", "2309802798@qq.com", "123456", "aewsfzkjbdesdfhh");
         } catch (EmailException e) {
             e.printStackTrace();
-        }*/
+        }
 
         Date date = null;
         try {

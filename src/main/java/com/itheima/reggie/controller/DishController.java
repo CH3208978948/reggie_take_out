@@ -60,7 +60,7 @@ public class DishController {
 
     // 查询页面菜品数据
     @GetMapping("/page")
-    public R<Page<DishDto>> getPage(int page, int pageSize, String name) {
+    public R<Page<DishDto>> page(int page, int pageSize, String name) {
         Page<DishDto> dishDtoPage = dishService.getPageWithFlavors(page, pageSize, name);
 
         return R.success(dishDtoPage);
@@ -68,7 +68,7 @@ public class DishController {
 
     // 查询菜品列表
     @GetMapping("/list")
-    public R<List<DishDto>> getDishList(Dish dish) {
+    public R<List<DishDto>> list(Dish dish) {
         List<DishDto> dishDtoList = null;
 
         // 动态构造key

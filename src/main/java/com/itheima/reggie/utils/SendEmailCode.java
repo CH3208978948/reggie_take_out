@@ -1,5 +1,6 @@
 package com.itheima.reggie.utils;
 
+import com.itheima.reggie.Test;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
